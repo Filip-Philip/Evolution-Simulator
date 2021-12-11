@@ -1,0 +1,3 @@
+rootProject.name = 'Evolution Simulation'
+include 'java'
+
