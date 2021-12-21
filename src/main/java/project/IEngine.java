@@ -1,6 +1,8 @@
+package project;
+
 /**
  * The interface responsible for managing the moves of the animals.
- * Assumes that Vector2d and MoveDirection classes are defined.
+ * Assumes that project.Vector2d and project.Direction classes are defined.
  *
  * @author apohllo
  */

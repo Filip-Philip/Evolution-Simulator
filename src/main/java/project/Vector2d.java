@@ -1,21 +1,20 @@
+package project;
+
 import java.util.Objects;
+import java.lang.Math;
 
 public class Vector2d {
     public final int x;
     public final int y;
 
-    public Vector2d(int x, int y) { // ctrl shift do gory w dol
+    public Vector2d(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
     @Override
     public String toString() {
-        return "(" +
-                x +
-                ", " +
-                y +
-                ")";
+        return "(" + x + ", " + y + ")";
     }
 
     public boolean precedes(Vector2d other) {
@@ -33,38 +32,14 @@ public class Vector2d {
     }
 
     public Vector2d upperRight(Vector2d other) {
-        int max_x = 0;
-        int max_y = 0;
-        if (other.x > this.x) {
-            max_x = other.x;
-        }
-        else {
-            max_x = this.x;
-        }
-        if (other.y > this.y) {
-            max_y = other.y;
-        }
-        else {
-            max_y = this.y;
-        }
+        int max_x = Math.max(this.x, other.x);
+        int max_y = Math.max(this.y, other.y);
         return new Vector2d(max_x, max_y);
     }
 
     public Vector2d lowerLeft(Vector2d other) {
-        int min_x = 0;
-        int min_y = 0;
-        if (other.x < this.x) {
-            min_x = other.x;
-        }
-        else {
-            min_x = this.x;
-        }
-        if (other.y < this.y) {
-            min_y = other.y;
-        }
-        else {
-            min_y = this.y;
-        }
+        int min_x = Math.min(this.x, other.x);
+        int min_y = Math.min(this.y, other.y);
         return new Vector2d(min_x, min_y);
     }
 

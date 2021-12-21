@@ -1,3 +1,5 @@
+package project;
+
 public enum Direction {
     FORWARD,
     BACKWARD,

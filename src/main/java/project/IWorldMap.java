@@ -1,18 +1,12 @@
+package project;
+
 /**
  * The interface responsible for interacting with the map of the world.
- * Assumes that Vector2d and MoveDirection classes are defined.
+ * Assumes that project.Vector2d and project.Direction classes are defined.
  *
  * @author apohllo
  */
 public interface IWorldMap {
-    /**
-     * Indicate if any object can move to the given position.
-     *
-     * @param position The position checked for the movement possibility.
-     * @return True if the object can move to that position.
-     */
-    boolean canMoveTo(Vector2d position);
-
     /**
      * Place a animal on the map.
      *
@@ -38,4 +32,26 @@ public interface IWorldMap {
      * @return Object or null if the position is not occupied.
      */
     Object objectAt(Vector2d position);
+
+    /**
+    * Indicate if any object can move to the given position.
+    *
+    * @param position The position checked for the movement possibility.
+    * @return True if the object can move to that position.
+    */
+    boolean canMoveTo(Vector2d position);
+
+    /**
+    * Return the bottom left corner of the map.
+    *
+    * @return project.Vector2d which is the bottom left corner of the map.
+    */
+    Vector2d getMapBottomLeftCorner();
+
+    /**
+    * Return the top right corner of the map.
+    *
+    * @return project.Vector2d which is the top right corner of the map.
+    */
+    Vector2d getMapTopRightCorner();
 }

@@ -1,23 +1,25 @@
+package project;
+
 public class OptionsParser {
-    public static MoveDirection[] parse(String[] args) throws IllegalArgumentException{
-        MoveDirection[] directions = new MoveDirection[args.length];
+    public static Direction[] parse(String[] args) throws IllegalArgumentException{
+        Direction[] directions = new Direction[args.length];
         int count = 0;
         for (String arg : args) {
             switch (arg) {
                 case "f", "forward" -> {
-                    directions[count] = MoveDirection.FORWARD;
+                    directions[count] = Direction.FORWARD;
                     count++;
                 }
                 case "b", "backward" -> {
-                    directions[count] = MoveDirection.BACKWARD;
+                    directions[count] = Direction.BACKWARD;
                     count++;
                 }
                 case "r", "right" -> {
-                    directions[count] = MoveDirection.RIGHT;
+                    directions[count] = Direction.RIGHT;
                     count++;
                 }
                 case "l", "left" -> {
-                    directions[count] = MoveDirection.LEFT;
+                    directions[count] = Direction.LEFT;
                     count++;
                 }
                 default -> throw new IllegalArgumentException(arg + " is not legal move specification");
