@@ -10,9 +10,9 @@ public class Animal {
     private final int moveEnergy;
     private final Genotype genotype;
     private ArrayList<Animal> children = new ArrayList<>();
+    private int lifetime = 0;
     private final Random random;
     private final AbstractWorldMap map;
-    private ArrayList<IPositionChangeObserver> observers = new ArrayList<>();
 
     public Animal(Vector2d initialPosition, int energy, int moveEnergy, AbstractWorldMap map, Random random) {
         this.genotype = new Genotype();
@@ -50,9 +50,16 @@ public class Animal {
         this.energy = energy;
     }
 
+    public int getLifetime(){ return lifetime; }
+
+    public void updateLifetime(){
+        lifetime++;
+    }
+
     public int getMoveEnergy(){
         return moveEnergy;
     }
+
     public int getSTART_ENERGY(){ return START_ENERGY; }
 
     public int getEnergy() {
@@ -77,6 +84,10 @@ public class Animal {
 
     private void gainEnergy(int n) { this.energy += n; }
 
+    public ArrayList getChildren(){
+        return children;
+    }
+
     public Animal copulateWith(Animal other){
         int energyUsedByParent1 = this.getEnergy() / 4;
         int energyUsedByParent2 = other.getEnergy() / 4;
@@ -93,16 +104,6 @@ public class Animal {
         this.children.add(child);
     }
 
-    public void addObserver(IPositionChangeObserver observer){
-        observers.add(observer);
-    }
-
-    public void removeObserver(IPositionChangeObserver observer){
-        for(IPositionChangeObserver observer1 : observers){
-            if(observer1.equals(observer)) observers.remove(observer1);
-        }
-    }
-
     public Vector2d getPosition() {
         return position;
     }
@@ -114,19 +115,19 @@ public class Animal {
         if (this == o) return true;
         if (!(o instanceof Animal)) return false;
         Animal animal = (Animal) o;
-        return START_ENERGY == animal.START_ENERGY && energy == animal.energy && Objects.equals(position, animal.position) && orientation == animal.orientation && Objects.equals(genotype, animal.genotype) && Objects.equals(children, animal.children) && Objects.equals(random, animal.random) && Objects.equals(map, animal.map) && Objects.equals(observers, animal.observers);
+        return START_ENERGY == animal.START_ENERGY && energy == animal.energy && Objects.equals(position, animal.position) && orientation == animal.orientation && Objects.equals(genotype, animal.genotype) && Objects.equals(children, animal.children) && Objects.equals(random, animal.random) && Objects.equals(map, animal.map);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, orientation, START_ENERGY, energy, genotype, children, random, map, observers);
+        return Objects.hash(position, orientation, START_ENERGY, energy, genotype, children, random, map);
     }
 
     @Override
     public String toString() {
         String direction = orientation.toString();
         String coordinates = position.toString();
-        return "(" + direction + ", " + coordinates + ")";
+        return "(" + energy + "," + direction + ", " + coordinates + ")";
     }
 
     private void turnNTimes(int n){
@@ -143,7 +144,6 @@ public class Animal {
                 if (turn == 0) newPosition = position.add(movementVector);
                 else newPosition = position.subtract(movementVector);
 
-                Vector2d oldPosition = position;
                 if (map.canMoveTo(newPosition)) {
                     int mapSizeX = map.getMapTopRightCorner().x + 1;
                     int mapSizeY = map.getMapTopRightCorner().y + 1;
@@ -151,7 +151,6 @@ public class Animal {
                     int newY = ((newPosition.y % mapSizeY) + mapSizeY) % mapSizeY;
                     newPosition = new Vector2d(newX, newY);
                     position = newPosition;
-//                    this.positionChanged(oldPosition, newPosition);
                 }
             }
             case 1, 2, 3, 5, 6, 7 -> this.turnNTimes(turn);
@@ -162,8 +161,23 @@ public class Animal {
 
     public void eat(Plant plant, int numberOfAnimalsSharingTheFood){
         if (plant.getPosition().equals(this.position)) {
+            System.out.println("plant energy is " + plant.getNutritionalValue() + " and number of animals eating is " + numberOfAnimalsSharingTheFood);
             int onePortion = plant.getNutritionalValue() / numberOfAnimalsSharingTheFood;
+            System.out.println("one portion is " + onePortion);
             this.gainEnergy(onePortion);
         }
+    }
+
+    public String getGraphicRepresentation(MapDirection direction){
+        return switch (direction) {
+            case NORTH -> "src/main/resources/Animal NORTH.png";
+            case NORTH_EAST -> "src/main/resources/Animal NORTH EAST.png";
+            case NORTH_WEST -> "src/main/resources/Animal NORTH WEST.png";
+            case EAST -> "src/main/resources/Animal EAST.png";
+            case WEST -> "src/main/resources/Animal WEST.png";
+            case SOUTH -> "src/main/resources/Animal SOUTH.png";
+            case SOUTH_EAST -> "src/main/resources/Animal SOUTH EAST.png";
+            case SOUTH_WEST -> "src/main/resources/Animal SOUTH WEST.png";
+        };
     }
 }

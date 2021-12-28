@@ -12,6 +12,11 @@ public class BoundedRectangularMap extends AbstractWorldMap {
     }
 
     @Override
+    public MapSwitch getMapType() {
+        return MapSwitch.BOUNDED_RECTANGULAR_MAP;
+    }
+
+    @Override
     public boolean canMoveTo(Vector2d position) {
         return isOutsideTheMap(position);
     }

@@ -56,4 +56,8 @@ public class Genotype {
     public ArrayList getGenes(){ return genes; }
 
     public int getNumberOfUniqueGenes(){ return NUMBER_OF_UNIQUE_GENES; }
+
+    public int getGENOTYPE_LENGTH() {
+        return GENOTYPE_LENGTH;
+    }
 }

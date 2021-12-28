@@ -15,7 +15,14 @@ public class WrappedRectangularMap extends AbstractWorldMap {
     }
 
     @Override
+    public MapSwitch getMapType() {
+        return MapSwitch.WRAPPED_RECTANGULAR_MAP;
+    }
+
+    @Override
     public boolean canMoveTo(Vector2d position) {
         return true;
     }
+
+
 }

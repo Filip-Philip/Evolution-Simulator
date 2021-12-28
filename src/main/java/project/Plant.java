@@ -18,4 +18,8 @@ public class Plant {
     public String toString(){
         return "*";
     }
+
+    public String getGraphicRepresentation(){
+        return "src/main/resources/Grass.jpg";
+    }
 }
