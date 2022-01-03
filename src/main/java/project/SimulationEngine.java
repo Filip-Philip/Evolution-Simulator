@@ -4,15 +4,14 @@ import gui.App;
 import javafx.application.Platform;
 import javafx.scene.chart.XYChart;
 
-import java.util.*;
-
 public class SimulationEngine implements Runnable{
     private AbstractWorldMap map;
+//    private final CSVWriter writer = new CSVWriter();
     private App appObserver;
     private final int plantsToSpawnEveryday = 3;
     private final double jungleSpawnPercentage = 0.66;
-    private final int numberOfAnimalsForMagicalReproduction = 5;
-    private final int moveDelay = 300;
+    private final int NUMBER_OF_ANIMALS_FOR_MAGICAL_REPRODUCTION = 5;
+    private final int MOVE_DELAY = 300;
     private double meanLifetime = 0;
     private int animalsDied = 0;
     private boolean stop = false;
@@ -34,7 +33,7 @@ public class SimulationEngine implements Runnable{
     }
 
     public int getNumberOfAnimalsForMagicalReproduction() {
-        return numberOfAnimalsForMagicalReproduction;
+        return NUMBER_OF_ANIMALS_FOR_MAGICAL_REPRODUCTION;
     }
 
     public void addObserver(App observer){ appObserver = observer; }
@@ -66,37 +65,45 @@ public class SimulationEngine implements Runnable{
     @Override
     public void run() {
         int i = 0;
+        Platform.runLater(() -> {
+            updateMapStat(map, totalAnimalsSeries);
+            updateMapStat(map, totalPlantsSeries);
+            updateMapStat(map, averageEnergySeries);
+            updateMapStat(map, averageLifetimeSeries);
+            updateMapStat(map, averageChildrenNumberSeries);
+        });
         while(!stop) {
             while (!pause && !stop) {
+                int finalI = i;
+                int finalNumberOfAnimals = map.getNumberOfAnimals();
+                int finalNumberOfPlants = map.getNumberOfPlants();
+                double finalMeanEnergyForAnimalsNow = map.getMeanEnergyForAnimalsNow();
+                double finalMeanLifetime = map.getMeanLifetime();
+                double finalMeanNumberOfChildren = map.getMeanNumberOfChildren();
+                Platform.runLater(() -> {
+                    mapStateChanged(map);
+                    totalAnimalsSeries.getData().add(new XYChart.Data(finalI, finalNumberOfAnimals));
+                    totalPlantsSeries.getData().add(new XYChart.Data(finalI, finalNumberOfPlants));
+                    averageEnergySeries.getData().add(new XYChart.Data(finalI, finalMeanEnergyForAnimalsNow));
+                    averageLifetimeSeries.getData().add(new XYChart.Data(finalI, finalMeanLifetime));
+                    averageChildrenNumberSeries.getData().add(new XYChart.Data(finalI, finalMeanNumberOfChildren));
+                    updateMapDominantGenotype(map, map.getDominantGenotype());
+                });
                 map.removeDeadAnimals();
                 map.animalsMove();
                 map.animalsEat();
                 map.animalsCopulate();
                 map.spawnPlants(plantsToSpawnEveryday, jungleSpawnPercentage);
-                int finalI = i;
-                Platform.runLater(() -> {
-                    mapStateChanged(map);
-                    totalAnimalsSeries.getData().add(new XYChart.Data(finalI, map.getNumberOfAnimals()));
-                    totalPlantsSeries.getData().add(new XYChart.Data(finalI, map.getNumberOfPlants()));
-                    averageEnergySeries.getData().add(new XYChart.Data(finalI, map.getMeanEnergyForAnimalsNow()));
-                    averageLifetimeSeries.getData().add(new XYChart.Data(finalI, map.getMeanLifetime()));
-                    averageChildrenNumberSeries.getData().add(new XYChart.Data(finalI, map.getMeanNumberOfChildren()));
-                    updateMapStat(map, totalAnimalsSeries);
-                    updateMapStat(map, totalPlantsSeries);
-                    updateMapStat(map, averageEnergySeries);
-                    updateMapStat(map, averageLifetimeSeries);
-                    updateMapStat(map, averageChildrenNumberSeries);
-                    updateMapDominantGenotype(map, map.getDominantGenotype());
-                });
                 try {
-                    Thread.sleep(moveDelay);
+                    Thread.sleep(MOVE_DELAY);
                 } catch (InterruptedException interruptedException) {
                     interruptedException.getMessage();
                 }
+                if (finalNumberOfAnimals == 0) setStop(true);
                 i++;
             }
             try {
-                Thread.sleep(moveDelay);
+                Thread.sleep(MOVE_DELAY);
             } catch (InterruptedException interruptedException) {
                 interruptedException.getMessage();
             }

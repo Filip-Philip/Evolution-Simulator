@@ -28,30 +28,11 @@ public abstract class AbstractWorldMap implements IWorldMap {
         spawnPlantsInJungle(startNumberOfPlants);
     }
 
-    private void spawnAnimalsInArea(Vector2d bottomLeftCorner, Vector2d topRightCorner, int startEnergy,
-                                    int moveEnergy, int startNumberOfAnimals) {
-        Vector2d bottomLeftOfSpawnArea = bottomLeftCorner;
-        Vector2d topRightOfSpawnArea = topRightCorner;
-        Vector2d spawnPosition;
-        int spawnArea = (topRightOfSpawnArea.x - bottomLeftOfSpawnArea.x) * (topRightOfSpawnArea.y - bottomLeftOfSpawnArea.y);
-        int i = 0;
-        while (i < startNumberOfAnimals && animalsHashMap.size() < spawnArea) {
-            int spawnPositionX = random.nextInt(topRightOfSpawnArea.x + 1 - bottomLeftOfSpawnArea.x) + bottomLeftOfSpawnArea.x;
-            int spawnPositionY = random.nextInt(topRightOfSpawnArea.y + 1 - bottomLeftOfSpawnArea.y) + bottomLeftOfSpawnArea.y;
-            spawnPosition = new Vector2d(spawnPositionX, spawnPositionY);
-            if (!animalsHashMap.containsKey(spawnPosition)) {
-                Animal animal = new Animal(spawnPosition, startEnergy, moveEnergy, this, random);
-                i++;
-            }
-        }
-    }
-
     public void spawnAnimalsInJungle(int startEnergy, int moveEnergy, int startNumberOfAnimals) {
         Vector2d bottomLeftOfSpawnArea = getJungleBottomLeftCorner();
         Vector2d topRightOfSpawnArea = getJungleTopRightCorner();
-//        spawnAnimalsInArea(bottomLeftOfSpawnArea, topRightOfSpawnArea, startEnergy, moveEnergy, startNumberOfAnimals);
         Vector2d spawnPosition;
-        int spawnArea = (topRightOfSpawnArea.x - bottomLeftOfSpawnArea.x) * (topRightOfSpawnArea.y - bottomLeftOfSpawnArea.y);
+        int spawnArea = (topRightOfSpawnArea.x - bottomLeftOfSpawnArea.x + 1) * (topRightOfSpawnArea.y - bottomLeftOfSpawnArea.y + 1);
         int i = 0;
         while (i < startNumberOfAnimals && getNumberOfSpotsOccupiedByAnimalsInJungle() < spawnArea) {
             int spawnPositionX = random.nextInt(topRightOfSpawnArea.x + 1 - bottomLeftOfSpawnArea.x) + bottomLeftOfSpawnArea.x;
@@ -262,7 +243,6 @@ public abstract class AbstractWorldMap implements IWorldMap {
     }
 
     public void animalsEat() {
-        System.out.println(animalsHashMap.toString());
         List<Animal> animalsToFeed;
         for (var entry : animalsHashMap.entrySet()) {
             Vector2d position = entry.getKey();
@@ -274,7 +254,6 @@ public abstract class AbstractWorldMap implements IWorldMap {
                     if (animal.getEnergy() == animalWithHighestEnergy.getEnergy()) animalsToFeed.add(animal);
                 }
                 int numberOfAnimalsSharingFood = animalsToFeed.size();
-                System.out.println(numberOfAnimalsSharingFood + " eating: " + animalsToFeed);
                 Plant plant = getPlantOnPosition(position);
                 for (Animal animal : animalsToFeed) {
                     animal.eat(plant, numberOfAnimalsSharingFood);
@@ -285,8 +264,6 @@ public abstract class AbstractWorldMap implements IWorldMap {
     }
 
     public void animalsCopulate() {
-        System.out.println( "animals before reproduction: "+animalsHashMap);
-        int numberBeforeReproduction = getNumberOfAnimals();
         List<Animal> animalsBorn = new ArrayList<>();
         List<Animal> animalsCopulated = new ArrayList<>();
         List<Animal> animalsCompetingToCopulate;
@@ -324,9 +301,6 @@ public abstract class AbstractWorldMap implements IWorldMap {
         for (Animal animal : animalsCopulated){
             place(animal);
         }
-        int animalsAfterReproduction = getNumberOfAnimals();
-        if (animalsAfterReproduction > numberBeforeReproduction) System.out.println("ANIMALS REPRODUCED!!!");
-        System.out.println("animals after reproduction: " + animalsHashMap);
     }
 
     public void spawnPlants(int plantsToSpawnEveryday, double jungleSpawnPercentage) {
@@ -361,7 +335,7 @@ public abstract class AbstractWorldMap implements IWorldMap {
 
     private void updateMeanLifetime(int animalsDiedThisTurn, int lifetimeOfDeadAnimalsThisTurn) {
         if (animalsDiedThisTurn != 0) {
-            int newTotalLifetime = (int) (animalsDied * meanLifetime + lifetimeOfDeadAnimalsThisTurn);
+            double newTotalLifetime = animalsDied * meanLifetime + lifetimeOfDeadAnimalsThisTurn;
             animalsDied += animalsDiedThisTurn;
             meanLifetime = newTotalLifetime / animalsDied;
         }
@@ -450,7 +424,7 @@ public abstract class AbstractWorldMap implements IWorldMap {
             }
         }
         if (countAnimals == 0) return 0;
-        return totalEnergy / countAnimals;
+        return  ((double) totalEnergy) / countAnimals;
     }
 
     public Genotype getDominantGenotype(){
@@ -477,6 +451,6 @@ public abstract class AbstractWorldMap implements IWorldMap {
             }
         }
         if (totalAnimals == 0) return 0;
-        return totalChildren / totalAnimals;
+        return ((double) totalChildren) / totalAnimals;
     }
 }

@@ -3,7 +3,6 @@ package gui;
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -16,7 +15,6 @@ import javafx.scene.Scene;
 import project.*;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Random;
 
 public class App extends Application implements MapStateChangeObserver{
@@ -53,14 +51,24 @@ public class App extends Application implements MapStateChangeObserver{
 
 
             Button pauseBoundedButton = new Button("Pause Bounded map");
+            Button resumeBoundedButton = new Button("Resume Bounded map");
             Button pauseWrappedButton = new Button("Pause Wrapped map");
-            bottomBox = new HBox(10.0, pauseWrappedButton, pauseBoundedButton);
+            Button resumeWrappedButton = new Button("Resume Wrapped map");
+            VBox wrappedPause = new VBox(10.0, pauseWrappedButton, resumeWrappedButton);
+            VBox boundedPause = new VBox(10.0, pauseBoundedButton, resumeBoundedButton);
+            bottomBox = new HBox(10.0, wrappedPause, boundedPause);
             pauseWrappedButton.setOnAction(event -> {
                     pause(engineWrapped);
-                    });
+            });
+            resumeWrappedButton.setOnAction(event -> {
+                resume(engineWrapped);
+            });
 
             pauseBoundedButton.setOnAction(event -> {
                 pause(engineBounded);
+            });
+            resumeBoundedButton.setOnAction(event -> {
+                resume(engineBounded);
             });
 
             Button startButton = new Button("Start");
@@ -164,6 +172,15 @@ public class App extends Application implements MapStateChangeObserver{
         }
     }
 
+    public void resume(SimulationEngine engine){
+        AbstractWorldMap mapEngine = engine.getMap();
+        MapSwitch mapSwitch = mapEngine.getMapType();
+        switch (mapSwitch){
+            case WRAPPED_RECTANGULAR_MAP -> engineWrapped.simulationPause(false);
+            case BOUNDED_RECTANGULAR_MAP -> engineBounded.simulationPause(false);
+        }
+    }
+
     @Override
     public void stop() throws Exception {
         super.stop();
@@ -226,8 +243,12 @@ public class App extends Application implements MapStateChangeObserver{
 
     public void updateMapChart(MapSwitch mapType, XYChart.Series series){
         switch (mapType){
-            case WRAPPED_RECTANGULAR_MAP -> wrappedMapChart.getData().add(series);
-            case BOUNDED_RECTANGULAR_MAP -> boundedMapChart.getData().add(series);
+            case WRAPPED_RECTANGULAR_MAP -> {
+                wrappedMapChart.getData().add(series);
+            }
+            case BOUNDED_RECTANGULAR_MAP -> {
+                boundedMapChart.getData().add(series);
+            }
         }
     }
 

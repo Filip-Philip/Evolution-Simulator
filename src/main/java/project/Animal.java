@@ -115,7 +115,10 @@ public class Animal {
         if (this == o) return true;
         if (!(o instanceof Animal)) return false;
         Animal animal = (Animal) o;
-        return START_ENERGY == animal.START_ENERGY && energy == animal.energy && Objects.equals(position, animal.position) && orientation == animal.orientation && Objects.equals(genotype, animal.genotype) && Objects.equals(children, animal.children) && Objects.equals(random, animal.random) && Objects.equals(map, animal.map);
+        return START_ENERGY == animal.START_ENERGY && energy == animal.energy && Objects.equals(position, animal.position)
+                && orientation == animal.orientation && Objects.equals(genotype, animal.genotype)
+                && Objects.equals(children, animal.children) && Objects.equals(random, animal.random)
+                && Objects.equals(map, animal.map);
     }
 
     @Override
@@ -161,9 +164,7 @@ public class Animal {
 
     public void eat(Plant plant, int numberOfAnimalsSharingTheFood){
         if (plant.getPosition().equals(this.position)) {
-            System.out.println("plant energy is " + plant.getNutritionalValue() + " and number of animals eating is " + numberOfAnimalsSharingTheFood);
             int onePortion = plant.getNutritionalValue() / numberOfAnimalsSharingTheFood;
-            System.out.println("one portion is " + onePortion);
             this.gainEnergy(onePortion);
         }
     }
